@@ -166,3 +166,4 @@ This is a **frontend‑only** prototype; there is no backend server.
 - **OCR and AI grading are simulated.** Each sample exam has predefined OCR readings with confidence values. A rule‑based engine produces the suggested grades, reasoning, learning gaps and red flags, and it reacts to the teacher’s OCR corrections. A newly uploaded photo is stored and viewable by the teacher, but its answers come from a sample answer set for that subject.
 - **Data is stored per browser** (`localStorage`). The two portals stay in sync in the same browser but not across different devices. Clearing the browser data or using *Restore the sample class* resets everything.
 - Large PDF uploads (over ~1.5 MB) are stored by file name only because browser storage is limited.
+- There is no parent portal. Announcements sent to parents are recorded in the teacher's *Sent* list only.

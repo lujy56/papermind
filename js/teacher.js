@@ -400,8 +400,8 @@
         '<p class="tiny c-purple mt-8">' + I('sparkles', 'icon-xs') + ' AI draft written for a Grade 4 reader — edit anything before publishing.</p>' +
         '<div class="field mt-8"><label class="sr-only" for="fb">Feedback text</label><textarea class="textarea" id="fb" rows="6" data-input="feedback" maxlength="600">' + esc(r.feedback) + '</textarea><div class="hint" id="fb-count">' + r.feedback.length + ' / 600 characters</div></div></section></div></div>' +
         '<div class="action-bar" role="region" aria-label="Step 3 actions"><a class="btn btn-outline" href="#/grading/' + e.id + '/2">' + I('arrowLeft', 'icon-sm') + 'Back to AI Grade</a>' +
-        '<div class="btns" style="align-items:center"><span class="small ' + (left ? 'c-amber bold' : 'c-green bold') + '" id="dec-left" role="status">' + (left ? left + (left === 1 ? ' decision left' : ' decisions left') : 'All decisions made') + '</span>' +
-        '<button class="btn btn-primary" type="button" data-action="confirm-grade">Confirm Grade & Feedback ' + I('arrowRight', 'icon-sm') + '</button></div></div>'
+        '<div class="btns" style="align-items:center"><span class="small ' + (left ? 'c-amber bold' : 'c-green bold') + '" id="dec-left" role="status">' + (left ? left + (left === 1 ? ' decision left' : ' decisions left') : '✓ 0 decisions left') + '</span>' +
+        '<button class="btn btn-primary" type="button" data-action="confirm-grade" ' + (left ? 'aria-disabled="true" title="Confirm or dismiss every item first"' : '') + '>Confirm Grade & Feedback ' + I('arrowRight', 'icon-sm') + '</button></div></div>'
     };
   }
 
@@ -480,14 +480,14 @@
     }).join('') : '<div class="empty">' + I('target') + '<h3>No confirmed learning gaps yet</h3><p>Gaps appear here after you confirm them while grading.</p></div>';
 
     const groupForm = '<form class="card sticky-form" data-form="create-group" novalidate aria-labelledby="cg-h"><h3 id="cg-h" class="card-title-ico"><span class="ti ico-amber">' + I('sparkles') + '</span>Create Targeted Group</h3><p class="card-sub mb-16">Group students who share a confirmed gap, then assign practice or a session.</p>' +
-      '<div class="field"><label for="g-name">Group name</label><input class="input" id="g-name" name="name" value="' + esc(draft && draft.name || (gSel ? GAPS[gSel].short + ' Support' : '')) + '" maxlength="60" required></div>' +
+      '<div class="field"><label for="g-name">Group name</label><input class="input" id="g-name" name="name" data-input="group-name" value="' + esc(draft && draft.name || (gSel ? GAPS[gSel].short + ' Support' : '')) + '" maxlength="60" required></div>' +
       '<div class="field"><label for="g-gap">Based on confirmed gap</label><select class="select" id="g-gap" name="gap" data-input="group-gap">' + Object.keys(GAPS).filter((g) => gapOpts.includes(g)).map((g) => '<option value="' + g + '" ' + (g === gSel ? 'selected' : '') + '>' + esc(GAPS[g].short) + '</option>').join('') + (gapOpts.length ? '' : '<option value="">No confirmed gaps yet</option>') + '</select></div>' +
       '<div class="notice mb-16">' + I('sparkles') + '<span>AI pre-ticked students who share this confirmed gap. Tick or untick anyone.</span></div>' +
       '<fieldset style="border:0;padding:0;margin:0"><legend class="sr-only">Students</legend><div class="check-grid">' + studs.map((s) => {
         const on = preset.includes(s.id);
         return '<label class="check ' + (on ? 'is-checked' : '') + '"><input type="checkbox" name="students" value="' + s.id + '" ' + (on ? 'checked' : '') + ' data-input="group-check">' + esc(s.name) + (sugg.includes(s.id) ? '<span class="tag">AI</span>' : '') + '</label>';
       }).join('') + '</div></fieldset>' +
-      '<button class="btn btn-primary btn-block mt-16" type="submit" id="g-submit">Create Group (' + preset.length + ' students)</button></form>';
+      '<button class="btn btn-primary btn-block mt-16" type="submit" id="g-submit" ' + (preset.length >= 2 && (draft && draft.name || gSel) ? '' : 'aria-disabled="true"') + '>Create Group (' + preset.length + ' students)</button><p class="hint mt-8" style="text-align:center">Enabled once the group has a name and at least 2 students.</p></form>';
     const savedGroups = '<section class="card" aria-labelledby="sg-h"><div class="card-head"><h3 id="sg-h" class="card-title-ico"><span class="ti ico-purple">' + I('group') + '</span>Saved groups <span class="count-pill">' + groups.length + '</span></h3></div>' + (groups.length ? '<div class="stack">' + groups.map((g) => '<div class="assign-card"><div class="row-between"><h4>' + esc(g.name) + '</h4>' + chip(g.source === 'AI-suggested' ? 'purple' : '', g.source) + '</div><div class="meta">' + g.studentIds.map(sname).map(esc).join(', ') + ' · ' + esc(GAPS[g.gapId] ? GAPS[g.gapId].short : '') + '</div>' +
         '<div class="acts"><a class="btn btn-xs" href="#/practice?group=' + g.id + '">' + I('practice', 'icon-xs') + 'Assign practice</a><a class="btn btn-xs" href="#/sessions?group=' + g.id + '">' + I('calendar', 'icon-xs') + 'Recommend session</a><button class="btn btn-xs btn-danger" type="button" data-action="delete-group" data-id="' + g.id + '">' + I('trash', 'icon-xs') + 'Delete</button></div></div>').join('') + '</div>' : '<p class="small muted">No groups yet — create one with the form.</p>') + '</section>';
 
@@ -685,7 +685,7 @@
     const tabBtn = (k, l) => '<button type="button" role="tab" aria-selected="' + (tab === k) + '" data-action="notif-tab" data-t="' + k + '">' + l + '</button>';
     let right;
     if (tab === 'inbox') right = inbox.length ? inbox.map((n) => '<div class="act-item ' + (n.read ? '' : 'unread') + '"><span class="a-ico ico-' + (n.kind === 'practice' ? 'green' : n.kind === 'session' ? 'blue' : 'amber') + '">' + I(n.kind === 'practice' ? 'checkCircle' : n.kind === 'session' ? 'users' : 'file') + '</span><div class="a-body"><div class="a-top"><strong>' + esc(n.title) + (n.read ? '' : ' <span class="sr-only">(unread)</span>') + '</strong><time>' + U.timeAgo(n.at) + '</time></div><p>' + esc(n.body) + '</p><div class="a-acts">' + (n.link ? '<button class="btn btn-xs btn-outline" type="button" data-action="open-tnote" data-id="' + n.id + '">Open</button>' : '') + (n.read ? '' : '<button class="btn btn-xs btn-ghost" type="button" data-action="tnote-read" data-id="' + n.id + '">Mark as read</button>') + '</div></div></div>').join('') : '<p class="small muted">Your inbox is empty.</p>';
-    else if (tab === 'sent') right = sent.length ? sent.map((m) => '<div class="act-item"><span class="a-ico ico-blue">' + I('send') + '</span><div class="a-body"><div class="a-top"><strong>' + esc(m.title) + '</strong><time>' + U.timeAgo(m.at) + '</time></div><p>' + esc(m.body) + '</p><div class="tiny muted mt-8">To: ' + esc(m.toLabel) + ' · ' + U.plural(m.to.length, 'recipient') + '</div></div></div>').join('') : '<p class="small muted">You have not sent any messages in ' + esc(cls().name) + ' yet.</p>';
+    else if (tab === 'sent') right = sent.length ? sent.map((m) => '<div class="act-item"><span class="a-ico ico-blue">' + I('send') + '</span><div class="a-body"><div class="a-top"><strong>' + esc(m.title) + '</strong><time>' + U.timeAgo(m.at) + '</time></div><p>' + esc(m.body) + '</p><div class="tiny muted mt-8">To: ' + esc(m.toLabel) + ' · ' + U.plural(m.to.length + (m.parents || 0), 'recipient') + '</div></div></div>').join('') : '<p class="small muted">You have not sent any messages in ' + esc(cls().name) + ' yet.</p>';
     else right = '<div class="pill-tabs mb-16" role="group" aria-label="Filter activity">' + [['all', 'All'], ['exams', 'Exams'], ['practice', 'Practice'], ['sessions', 'Sessions & messages']].map(([k, l]) => '<button type="button" aria-pressed="' + (af === k) + '" data-action="act-filter" data-f="' + k + '">' + l + '</button>').join('') + '</div>' + (acts.length ? acts.slice(0, st().ui.actMore ? 50 : 6).map(actItem).join('') : '<p class="small muted">No activity for this filter.</p>') +
       (acts.length > 6 && !st().ui.actMore ? '<button class="btn btn-ghost btn-sm" type="button" data-action="act-more">View older activity ' + I('arrowRight', 'icon-xs') + '</button>' : '');
     const inboxUnread = inbox.filter((n) => !n.read).length;
@@ -693,12 +693,12 @@
       title: 'Notifications',
       html: '<div class="page-head"><div class="ph"><span class="ph-ico rose">' + I('bell') + '</span><div><h2>Notifications & Direct Announcements</h2><p>Send comments, reminders or encouragement to a student, a group or the whole class.</p></div></div></div>' +
         '<div class="grid grid-2" style="align-items:start"><form class="card" data-form="send-message" novalidate aria-labelledby="sa-h"><div class="row-between mb-16"><h3 id="sa-h">Send Announcement</h3>' + I('send') + '</div>' +
-        '<div class="field"><label for="m-to">Recipients</label><select class="select" id="m-to" name="to" required><option value="all" ' + (to === 'all' ? 'selected' : '') + '>All ' + esc(cls().name) + ' students (' + studs.length + ')</option>' +
+        '<div class="field"><label for="m-to">Recipients</label><select class="select" id="m-to" name="to" data-input="m-to" required><optgroup label="Whole grade"><option value="all" ' + (to === 'all' ? 'selected' : '') + '>All ' + esc(cls().name) + ' students (' + studs.length + ')</option><option value="all+parents">' + esc(cls().name) + ' students & parents (' + studs.length * 2 + ')</option><option value="parents">' + esc(cls().name) + ' parents only (' + studs.length + ')</option></optgroup>' +
         (groups.length ? '<optgroup label="Groups">' + groups.map((g) => '<option value="group:' + g.id + '">' + esc(g.name) + ' (' + g.studentIds.length + ')</option>').join('') + '</optgroup>' : '') +
         '<optgroup label="Individual students">' + studs.map((s) => '<option value="student:' + s.id + '" ' + (to === 'student:' + s.id ? 'selected' : '') + '>' + esc(s.name) + '</option>').join('') + '</optgroup></select></div>' +
         '<div class="field"><label for="m-type">Message type</label><select class="select" id="m-type" name="kind"><option value="message">Comment / encouragement</option><option value="feedback">Feedback message</option><option value="reminder">Reminder</option><option value="practice">Practice recommendation</option></select></div>' +
         '<div class="field"><label for="m-title">Message title</label><input class="input" id="m-title" name="title" maxlength="80" placeholder="e.g. Fantastic job on today’s fractions work!" required></div>' +
-        '<div class="field"><label for="m-body">Message content</label><textarea class="textarea" id="m-body" name="body" maxlength="400" placeholder="Write a short, friendly message…" required data-input="m-body"></textarea><span class="hint" id="m-count">0 / 400 characters</span></div>' +
+        '<div class="field"><label for="m-body">Message content</label><textarea class="textarea" id="m-body" name="body" maxlength="400" placeholder="Write a short, friendly message…" required data-input="m-body"></textarea><div class="row-between"><span class="hint" id="m-tone">' + I('info', 'icon-xs') + ' Students will read this — write in simple words at a Grade 4 level.</span><span class="hint" id="m-count">0 / 400 characters</span></div></div>' +
         '<div class="field"><span class="label">Quick tags</span><div class="row row-wrap">' + [['🌟 Great effort', 'You put in great effort today — well done! '], ['📘 Practice in portal', 'There is new practice waiting for you in your portal. '], ['⏰ Reminder', 'Friendly reminder: please finish your practice before the due date. '], ['🧮 Check problem 3', 'Have another look at problem 3 if you want to try the extra star challenge. ']].map(([l, t]) => '<button class="tag-btn" type="button" data-action="quick-tag" data-t="' + esc(t) + '">' + esc(l) + '</button>').join('') + '</div></div>' +
         '<button class="btn btn-primary btn-block" type="submit">' + I('send', 'icon-sm') + 'Send Notification</button></form>' +
         '<section class="card"><div class="card-head"><div><h3>Activity & messages</h3><p class="card-sub">Exam uploads, grading updates, practice and replies.</p></div></div><div class="seg mb-16" role="tablist" aria-label="Notification views">' + tabBtn('activity', 'Recent activity') + tabBtn('inbox', 'Inbox' + (inboxUnread ? ' (' + inboxUnread + ')' : '')) + tabBtn('sent', 'Sent') + '</div><div class="stack">' + right + '</div></section></div>'
@@ -953,6 +953,10 @@
   };
 
   /* ---------- live inputs ---------- */
+  function syncGroupBtn(f) {
+    const ok = f.name.value.trim() && f.querySelectorAll('input[name="students"]:checked').length >= 2;
+    const b = document.getElementById('g-submit'); if (ok) b.removeAttribute('aria-disabled'); else b.setAttribute('aria-disabled', 'true');
+  }
   const inputs = {
     'sub-search': (el) => {
       st().ui.subQuery = el.value; save();
@@ -990,9 +994,11 @@
       el.closest('.check').classList.toggle('is-checked', el.checked);
       const f = el.form; const n = f.querySelectorAll('input[name="students"]:checked').length;
       document.getElementById('g-submit').textContent = 'Create Group (' + n + ' student' + (n === 1 ? '' : 's') + ')';
+      syncGroupBtn(f);
       const d = st().ui.groupDraft || { classId: cid(), gapId: f.gap.value, name: f.name.value };
       d.ids = [...f.querySelectorAll('input[name="students"]:checked')].map((x) => x.value); d.name = f.name.value; st().ui.groupDraft = d; save();
     },
+    'group-name': (el) => { syncGroupBtn(el.form); const d = st().ui.groupDraft; if (d) { d.name = el.value; save(); } },
     'lang-student': (el) => { st().ui.langStudent = el.value; st().ui.langPending = null; save(); go('#/gaps?student=' + el.value); },
     'lang-dec': (el) => {
       st().ui.langPending = { sid: st().ui.langStudent, v: el.value }; save();
@@ -1012,6 +1018,11 @@
       document.getElementById('s-invites').textContent = g ? 'Invites: ' + g.studentIds.map(sname).join(', ') : '';
       const t = document.getElementById('s-title'), w = document.getElementById('s-why');
       if (g) { if (!t.dataset.touched) t.value = GAPS[g.gapId].short + ' Review'; if (!w.dataset.touched) w.value = 'To practise ' + GAPS[g.gapId].short.toLowerCase() + ' together.'; }
+    },
+    'm-to': (el) => {
+      const parentsOnly = el.value === 'parents';
+      document.getElementById('m-tone').innerHTML = I('info', 'icon-xs') + (parentsOnly ? ' Only parents will read this — use a normal adult tone.' : ' Students will read this — write in simple words at a Grade 4 level.');
+      document.getElementById('m-body').placeholder = parentsOnly ? 'Dear parents, …' : 'Write a short, friendly message…';
     },
     'm-body': (el) => { document.getElementById('m-count').textContent = el.value.length + ' / 400 characters'; }
   };
@@ -1083,19 +1094,25 @@
       U.clearErrors(f);
       let bad = false;
       const v = f.to.value; let ids, label;
-      if (v === 'all') { ids = D.classStudents(cid()).map((s) => s.id); label = 'All ' + cls().name + ' students'; }
+      let parents = 0;
+      if (v === 'all' || v === 'all+parents' || v === 'parents') {
+        const all = D.classStudents(cid());
+        ids = v === 'parents' ? [] : all.map((s) => s.id);
+        parents = v === 'all' ? 0 : all.length;
+        label = v === 'all' ? 'All ' + cls().name + ' students' : v === 'parents' ? cls().name + ' parents' : cls().name + ' students & parents';
+      }
       else { ids = resolveTarget(v); const [k, id] = v.split(':'); label = k === 'group' ? st().groups.find((g) => g.id === id).name : sname(id); }
-      if (!ids.length) { U.setError(f.to, 'Choose who should receive this.'); bad = true; }
+      if (!ids.length && !parents) { U.setError(f.to, 'Choose who should receive this.'); bad = true; }
       if (!f.title.value.trim()) { U.setError(f.title, 'Add a short title.'); bad = true; }
       if (f.body.value.trim().length < 5) { U.setError(f.body, 'Write a message (at least a few words).'); bad = true; }
       if (bad) { f.querySelector('[aria-invalid="true"]').focus(); return; }
       const kind = f.kind.value;
       const link = kind === 'practice' ? '#/practice' : kind === 'feedback' ? '#/exams' : '#/notifications';
       sendToStudents(ids, { kind: kind === 'reminder' ? 'reminder' : kind === 'practice' ? 'practice' : 'message', title: f.title.value.trim(), body: f.body.value.trim(), link });
-      st().sent.unshift({ id: D.uid('m'), classId: cid(), title: f.title.value.trim(), body: f.body.value.trim(), toLabel: label, to: ids, at: Date.now() });
+      st().sent.unshift({ id: D.uid('m'), classId: cid(), title: f.title.value.trim(), body: f.body.value.trim(), toLabel: label, to: ids, parents, at: Date.now() });
       D.log(cid(), { kind: 'message', title: 'Announcement Sent', text: '“' + esc(f.title.value.trim()) + '” sent to ' + esc(label) + '.', link: '#/notifications?tab=sent', action: 'View sent' });
       save(); st().ui.notifTab = 'sent'; save(); go('#/notifications?tab=sent');
-      U.toast('success', 'Notification sent', 'Delivered to ' + U.plural(ids.length, 'student') + ' (' + label + ').');
+      U.toast('success', 'Notification sent', 'Sent to ' + [ids.length ? U.plural(ids.length, 'student') : '', parents ? U.plural(parents, 'parent') : ''].filter(Boolean).join(' and ') + ' (' + label + ').');
     }
   };
 

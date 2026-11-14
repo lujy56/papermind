@@ -98,15 +98,21 @@
   const EXAM_NAMES = { Math: ['Math Quiz 4', 'Mathe-Test 4', 'Fractions Test', 'Multiplication Checkup'], Science: ['Science Quiz', 'Plants & Animals Test'], English: ['English Reading Check', 'Spelling Test'] };
   function vUpload() {
     const steps = ['Choose your paper', 'Tell us about it', 'Send it!'];
-    const stepper = '<ol class="up-steps" aria-label="Upload steps">' + steps.map((l, i) => '<li class="' + (i + 1 < up.step ? 'done' : i + 1 === up.step ? 'on' : '') + '" ' + (i + 1 === up.step ? 'aria-current="step"' : '') + '><span class="n">' + (i + 1 < up.step ? '✓' : i + 1) + '</span>' + l + '</li>').join('') + '</ol>';
+    const stepper = '<ol class="up-steps" aria-label="Upload steps">' + steps.map((l, i) => {
+      const k = i + 1, cls_ = k < up.step ? 'done' : k === up.step ? 'on' : '';
+      const can = up.step === 3 ? k === 1 : (k < up.step || (k === 2 && up.file && up.step !== 2));
+      const inner = '<span class="n">' + (k < up.step ? '✓' : k) + '</span>' + l;
+      return '<li class="' + cls_ + (can ? ' can' : '') + '" ' + (k === up.step ? 'aria-current="step"' : '') + '>' + (can ? '<button type="button" data-action="up-goto" data-s="' + k + '" aria-label="Go to step ' + k + ': ' + l + (up.step === 3 && k === 1 ? ' (start a new upload)' : '') + '">' + inner + '</button>' : inner) + '</li>';
+    }).join('') + '</ol>';
     if (up.step === 3) {
       const e = D.exam(up.lastId);
       return { title: 'Upload Exam', html: '<p class="page-sub">Your paper was sent!</p>' + stepper + '<section class="success" role="status"><div class="party" aria-hidden="true">🎉</div><h2>Your paper is on its way to ' + esc(teacher()) + '!</h2><p class="muted">' + esc(e ? e.title : 'Your exam') + ' was uploaded. We will tell you when your grade and feedback are ready.</p>' +
         '<ol class="timeline" aria-label="What happens next"><li class="done"><span class="c">✓</span>Uploaded</li><li class="now"><span class="c">👀</span>Teacher checks answers</li><li><span class="c">⭐</span>Grade & feedback ready</li></ol>' +
         '<div class="row" style="justify-content:center;flex-wrap:wrap"><a class="btn btn-primary btn-lg" href="#/exams?tab=review">See My Exams</a><button class="btn btn-lg" type="button" data-action="upload-again">Upload another paper</button></div></section>' };
     }
-    if (!up.file) {
-      return { title: 'Upload Exam', html: '<p class="page-sub">Take a photo or scan of your finished test paper.</p>' + stepper +
+    if (!up.file || up.step === 1) {
+      const keep = up.file ? '<div class="keep-file"><span class="kf-ico" aria-hidden="true">' + (up.file.isPdf ? '📄' : '🖼️') + '</span><div style="flex:1;min-width:0"><b>Your chosen paper: ' + esc(up.file.name) + '</b><div class="small muted">Keep it, or choose a new file below.</div></div><button class="btn btn-primary" type="button" data-action="up-goto" data-s="2">Keep this paper ' + I('arrowRight', 'icon-sm') + '</button></div>' : '';
+      return { title: 'Upload Exam', html: '<p class="page-sub">Take a photo or scan of your finished test paper.</p>' + stepper + keep +
         '<div class="dropzone" id="dropzone"><div class="cloud">' + I('upload') + '</div><h2>Upload Your Exam Paper</h2><p>Take a complete photo or scan of your finished test paper</p>' +
         '<div class="chips"><span class="chip">📷 Snap a clear photo</span><span class="chip chip-green">✨ Teacher checks it</span><span class="chip chip-amber">🌞 Earn stars</span></div>' +
         '<label class="btn btn-primary btn-lg" for="file-in" style="cursor:pointer">' + I('upload', 'icon-sm') + 'Choose File</label><input id="file-in" class="sr-only" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" data-input="file-in" aria-describedby="file-help">' +
@@ -117,15 +123,15 @@
         after: bindDrop };
     }
     const f = up.file;
-    const subj = f.subject || 'Math';
+    const subj = f.subject || 'Math', fm = up.form || {};
     return { title: 'Upload Exam', html: '<p class="page-sub">Great! Now tell us which exam this is.</p>' + stepper +
       '<div class="preview-wrap"><div class="preview">' + (f.isPdf ? '<div class="pdf">' + I('file') + '<b>PDF document</b></div>' : '<img src="' + f.preview + '" alt="Preview of your exam paper">') +
       '<p class="small mt-12"><b>' + esc(f.name) + '</b><br><span class="muted">' + esc(f.sizeLabel) + '</span></p><button class="btn btn-sm mt-12" type="button" data-action="change-file">' + I('refresh', 'icon-sm') + 'Choose a different file</button></div>' +
       '<form data-form="upload" novalidate><div class="field"><label for="u-subject">Which subject?</label><select class="select" id="u-subject" name="subject" data-input="u-subject">' + ['Math', 'Science', 'English'].map((s) => '<option ' + (s === subj ? 'selected' : '') + '>' + s + '</option>').join('') + '</select></div>' +
-      '<div class="field"><label for="u-title">Which exam is it?</label><select class="select" id="u-title" name="title">' + EXAM_NAMES[subj].map((n) => '<option>' + n + '</option>').join('') + '<option value="__other">Something else…</option></select></div>' +
-      '<div class="field" id="u-other-wrap" hidden><label for="u-other">Type the exam name</label><input class="input" id="u-other" name="other" maxlength="40" placeholder="e.g. Math Quiz 5"></div>' +
-      '<div class="field"><label class="big-check"><input type="checkbox" name="check" id="u-check"> I checked: the whole page is in the picture and I can read it 👀</label></div>' +
-      '<button class="btn btn-success btn-lg btn-block" type="submit">Send to ' + esc(teacher()) + ' 🚀</button><p class="tiny muted mt-12">Only ' + esc(teacher()) + ' can see your paper. You will get a message when it is checked.</p></form></div>' };
+      '<div class="field"><label for="u-title">Which exam is it?</label><select class="select" id="u-title" name="title">' + EXAM_NAMES[subj].map((n) => '<option ' + (fm.title === n ? 'selected' : '') + '>' + n + '</option>').join('') + '<option value="__other" ' + (fm.title === '__other' ? 'selected' : '') + '>Something else…</option></select></div>' +
+      '<div class="field" id="u-other-wrap" ' + (fm.title === '__other' ? '' : 'hidden') + '><label for="u-other">Type the exam name</label><input class="input" id="u-other" name="other" maxlength="40" placeholder="e.g. Math Quiz 5" value="' + esc(fm.other || '') + '"></div>' +
+      '<div class="field"><label class="big-check"><input type="checkbox" name="check" id="u-check" ' + (fm.check ? 'checked' : '') + '> I checked: the whole page is in the picture and I can read it 👀</label></div>' +
+      '<div class="up-actions"><button class="btn btn-outline btn-lg" type="button" data-action="up-goto" data-s="1">' + I('arrowLeft', 'icon-sm') + 'Back</button><button class="btn btn-success btn-lg" type="submit">Send to ' + esc(teacher()) + ' 🚀</button></div><p class="tiny muted mt-12">Only ' + esc(teacher()) + ' can see your paper. You will get a message when it is checked.</p></form></div>' };
   }
   function bindDrop(view) {
     const dz = view.querySelector('#dropzone'); if (!dz) return;
@@ -162,7 +168,7 @@
     else if (f.size < 1.5 * 1024 * 1024) dataUrl = await new Promise((r) => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.onerror = () => r(null); fr.readAsDataURL(f); });
     if (!isPdf && !dataUrl) { fileError('We could not open this picture. Please try another photo.'); return; }
     up.file = { name: f.name, type: isPdf ? 'application/pdf' : 'image/jpeg', isPdf, preview: dataUrl || url, dataUrl, sizeLabel: (f.size / 1024 > 1024 ? (f.size / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(f.size / 1024)) + ' KB') };
-    up.step = 2; rer();
+    up.form = null; up.step = 2; rer();
     U.toast('success', 'Paper added!', 'Now choose the subject and exam name.');
   }
 
@@ -545,10 +551,17 @@
     'next-tip': (el) => { tipIdx++; const t = document.getElementById('tip-text'); t.textContent = TIPS[tipIdx % TIPS.length]; t.classList.remove('pop'); void t.offsetWidth; t.classList.add('pop'); el.classList.remove('hop'); void el.offsetWidth; el.classList.add('hop'); },
     'use-sample': () => {
       up.file = { name: 'sample-exam.svg', type: 'image/svg+xml', isPdf: false, preview: 'assets/illustrations/sample-exam.svg', dataUrl: 'assets/illustrations/sample-exam.svg', sizeLabel: 'Sample paper' };
-      up.step = 2; rer(); U.toast('info', 'Sample paper added', 'Now choose the subject and exam name.');
+      up.form = null; up.step = 2; rer(); U.toast('info', 'Sample paper added', 'Now choose the subject and exam name.');
     },
-    'change-file': () => { up.file = null; up.step = 1; rer(); },
-    'upload-again': () => { up.file = null; up.step = 1; up.lastId = null; rer(); },
+    'change-file': () => { up.file = null; up.form = null; up.step = 1; rer(); },
+    'up-goto': (el) => {
+      const k = +el.dataset.s;
+      if (up.step === 3) { up.file = null; up.form = null; up.lastId = null; up.step = 1; rer(); return; }
+      if (up.step === 2) { const f = document.querySelector('form[data-form="upload"]'); if (f) { up.form = { title: f.title.value, other: f.other.value, check: f.check.checked }; up.file.subject = f.subject.value; } }
+      if (k === 2 && !up.file) { U.toast('warning', 'Choose your paper first', 'Pick a photo or PDF, then you can go to step 2.'); return; }
+      up.step = k; rer();
+    },
+    'upload-again': () => { up.file = null; up.form = null; up.step = 1; up.lastId = null; rer(); },
     'exam-tab': (el) => go('#/exams' + (el.dataset.t === 'review' ? '?tab=review' : '')),
     'exam-subj': (el) => go('#/exams' + (el.dataset.s === 'All' ? '' : '?subject=' + el.dataset.s)),
     'open-practice': (el) => openPractice(el.dataset.id),
@@ -569,6 +582,7 @@
   const inputs = {
     'file-in': (el, e) => { if (e.type !== 'change') return; const f = el.files[0]; if (f) takeFile(f); el.value = ''; },
     'u-subject': (el) => {
+      if (up.form) up.form.title = '';
       if (up.file) up.file.subject = el.value;
       const t = document.getElementById('u-title');
       t.innerHTML = EXAM_NAMES[el.value].map((n) => '<option>' + n + '</option>').join('') + '<option value="__other">Something else…</option>';
@@ -600,7 +614,7 @@
         e.file.dataUrl = null; if (!save()) { st().exams.pop(); return; }
         U.toast('warning', 'Saved without the picture', 'Your paper was sent, but the photo was too big to keep a copy here.');
       }
-      up.step = 3; up.lastId = e.id; up.file = null; rer(); U.confetti(90);
+      up.step = 3; up.lastId = e.id; up.file = null; up.form = null; rer(); U.confetti(90);
       U.toast('success', 'Exam successfully uploaded! 🎉', title + ' was sent to ' + teacher() + '.');
     }
   };

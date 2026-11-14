@@ -449,3 +449,13 @@ a.exam-row { transition: transform .15s, box-shadow .15s, border-color .15s; }
 .lc-stars { font-size: 14px; margin-left: 4px; }
 .latest-card p { font-size: 14.5px; color: var(--text-2); font-style: italic; }
 .latest-card .go { width: 38px; height: 38px; border-radius: 50%; background: #fff; display: grid; place-items: center; flex: none; }
+
+/* upload: step navigation */
+.up-steps li.can { padding: 0; }
+.up-steps li button { all: unset; display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; cursor: pointer; }
+.up-steps li.can:hover { box-shadow: 0 0 0 2px var(--indigo-500); }
+.up-steps li button:focus-visible { box-shadow: var(--focus); }
+.keep-file { display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-radius: 20px; background: var(--green-50); border: 1.5px solid #bfe9d4; margin-bottom: 18px; flex-wrap: wrap; }
+.keep-file .kf-ico { width: 46px; height: 46px; border-radius: 14px; background: #fff; display: grid; place-items: center; font-size: 22px; flex: none; }
+.up-actions { display: grid; grid-template-columns: auto 1fr; gap: 12px; }
+@media (max-width: 640px) { .up-actions { grid-template-columns: 1fr; } }

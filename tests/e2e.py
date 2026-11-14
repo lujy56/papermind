@@ -95,7 +95,7 @@ async def main():
         await pg.click('[data-action=run-ai]'); await pg.wait_for_timeout(1400)
         v=await pg.inner_text('#view'); ok('74%' in v and 'Step 2 of 4' in v,'AI grading shows 74% at step 2')
         await pg.click('[data-action=to-step3]'); await pg.wait_for_timeout(200)
-        await pg.click('[data-action=confirm-grade]')
+        await pg.click('[data-action=confirm-grade]', force=True)
         ok(any('decision' in t for t in await toasts(pg)),'confirm blocked while decisions left')
         await pg.fill('#pts-q4','6'); await pg.wait_for_timeout(100)
         ok(await pg.is_visible('#reason-row-q4'),'override shows reason field')
@@ -105,7 +105,7 @@ async def main():
             for i in range(n):
                 await pg.locator(sel).nth(i).click(); await pg.wait_for_timeout(80)
         await pg.click('[data-action=decide][data-kind=flag][data-v=confirmed]'); await pg.wait_for_timeout(100)
-        ok('All decisions made' in await pg.inner_text('#dec-left'),'all decisions made')
+        ok('0 decisions left' in await pg.inner_text('#dec-left'),'counter reads 0 decisions left')
         await pg.click('[data-action=confirm-grade]'); await pg.wait_for_timeout(150)
         ok(await pg.locator('#reason-q4[aria-invalid=true]').count()==1,'missing override reason flagged')
         await pg.fill('#reason-q4','Correct value, partial credit for conversion attempt')
