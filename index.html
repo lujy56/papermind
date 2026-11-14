@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Log in · PaperMind</title>
+  <meta name="description" content="PaperMind — handwritten exam review and learning support for Grades 1–5.">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="login">
+  <main class="login-page">
+    <div class="login-card">
+      <section class="login-hero" aria-hidden="false">
+        <div class="brand">
+          <span class="brand-mark"><img src="assets/logo.png" alt=""></span>
+          <span><span class="brand-name">PaperMind</span><br><span class="brand-role" id="hero-role">Student Portal</span></span>
+        </div>
+        <div class="login-hero-center">
+          <div class="mascot-tile"><img src="assets/logo.png" alt="PaperMind mascot: a friendly brain reading a book"></div>
+          <h2 id="hero-title">Learn, Track, Shine! ⭐</h2>
+          <p id="hero-text">Grades 1–5 Learning Companion. Discover your strengths and unlock badges!</p>
+        </div>
+        <p class="foot">Horizon Elementary School</p>
+      </section>
+
+      <section class="login-form-side">
+        <h1><span aria-hidden="true">🌞</span> Welcome Back!</h1>
+        <p class="lead" id="login-lead">Enter your username and PIN to open your portal.</p>
+
+        <div class="role-switch" role="radiogroup" aria-label="I am a">
+          <button type="button" class="role-option" role="radio" data-role="student" aria-checked="true">
+            <span class="role-ico" aria-hidden="true">🎒</span><span><strong>I’m a Student</strong><span>Grades 1–5</span></span>
+          </button>
+          <button type="button" class="role-option" role="radio" data-role="teacher" aria-checked="false">
+            <span class="role-ico" aria-hidden="true">🍎</span><span><strong>I’m a Teacher</strong><span>Review &amp; grade</span></span>
+          </button>
+        </div>
+
+        <div id="login-alert" class="notice err form-alert" role="alert" hidden></div>
+
+        <form id="login-form" novalidate>
+          <div class="field">
+            <label for="login-id" id="id-label">Student Username / ID</label>
+            <input class="input" id="login-id" name="id" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+          </div>
+          <div class="field">
+            <label for="login-secret" id="secret-label">Student PIN</label>
+            <div class="pw-wrap">
+              <input class="input" id="login-secret" name="secret" type="password" autocomplete="current-password" required>
+              <button type="button" class="pw-toggle" id="pw-toggle" aria-label="Show password" aria-pressed="false">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-lg btn-block" id="login-submit" type="submit">Log In to PaperMind 🚀</button>
+        </form>
+
+        <details class="login-help">
+          <summary>
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg>
+            Need help signing in?
+          </summary>
+          <p class="mt-8">Ask your teacher for your username and PIN. For the class accounts in this school:</p>
+          <div class="acct"><span>Student · <code>salma.ahmed</code> · PIN <code>1234</code></span><button type="button" class="btn btn-xs" data-fill="student|salma.ahmed|1234">Use</button></div>
+          <div class="acct"><span>Teacher · <code>sarah.educator@papermind.school</code> · <code>teacher123</code></span><button type="button" class="btn btn-xs" data-fill="teacher|sarah.educator@papermind.school|teacher123">Use</button></div>
+          <p class="mt-8 tiny">Other students use <code>firstname.lastname</code> (e.g. <code>omar.ali</code>) with PIN <code>1234</code>.</p>
+          <button type="button" class="link-btn mt-8 tiny" id="reset-data">Restore the sample class to its starting point</button>
+        </details>
+      </section>
+    </div>
+  </main>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
