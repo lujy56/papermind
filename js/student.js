@@ -234,9 +234,9 @@
         '<div class="r"><span class="i" aria-hidden="true">📝</span><div><div class="k">Exam</div><div class="v">' + esc(e.title) + ' — ' + esc(e.topics) + '</div></div></div>' +
         '<div class="r"><span class="i" aria-hidden="true">📅</span><div><div class="k">Checked on</div><div class="v">' + U.fmtDate(pb.at) + '</div></div></div></section></div>' +
         '<h3 class="mt-24 mb-16" style="font-size:22px">Quick Overview</h3><div class="ov-grid">' +
-        '<section class="ov ov-pink"><h4>' + I('message', 'icon-sm') + ' Feedback from ' + esc(teacher()) + '</h4><p style="white-space:pre-wrap">' + esc(pb.feedback) + '</p></section>' +
-        '<section class="ov ov-yellow"><h4>' + I('target', 'icon-sm') + ' Things to practise</h4>' + gapsHTML + '</section>' +
-        '<section class="ov ' + (pb.redFlag ? 'ov-lav' : 'ov-mint') + '"><h4>' + I('flag', 'icon-sm') + ' Extra help</h4>' + flagHTML + '</section></div>' +
+        '<section class="ov ov-pink"><h4>' + I('message', 'icon-sm') + ' Feedback</h4><p style="white-space:pre-wrap">' + esc(pb.feedback) + '</p></section>' +
+        '<section class="ov ov-yellow"><h4>' + I('target', 'icon-sm') + ' Weaknesses</h4>' + gapsHTML + '</section>' +
+        '<section class="ov ' + (pb.redFlag ? 'ov-lav' : 'ov-mint') + '"><h4>' + I('flag', 'icon-sm') + ' Red Flag</h4>' + flagHTML + '</section></div>' +
         (ses ? '<div class="notice mt-24" style="font-size:15px">' + I('calendar') + '<span><b>' + esc(teacher()) + ' invited you to “' + esc(ses.title) + '”</b> on ' + U.fmtWhen(ses.at) + '. ' + (ses.registrations.includes(me().id) ? 'You are registered ✓' : '<a href="#/sessions">See details & register →</a>') + '</span></div>' : '') +
         answers +
         '<div class="mt-24">' + (prac ? '<a class="btn btn-primary cta-big" href="#/practice?focus=' + prac.id + '">View Recommended Practice ✨</a>' : '<a class="btn btn-primary cta-big" href="#/practice">Go to my practice ✨</a>') + '</div>'
@@ -623,7 +623,7 @@
     home: '<ul><li><b>Upload Exam</b> – send a photo of your test.</li><li><b>My Results</b> – see grades your teacher checked.</li><li><b>Your Next Steps</b> – what to do next, in order.</li></ul>',
     upload: '<ul><li>Put your paper on a table with good light.</li><li>Take a photo of the <b>whole</b> page.</li><li>Choose the subject and the exam name, then press <b>Send</b>.</li><li>Photos (JPG, PNG) or PDF, up to 10 MB.</li></ul>',
     exams: '<ul><li><b>Completed</b> – your teacher checked it. Tap to see your grade and feedback.</li><li><b>Under Review</b> – your teacher is still checking. No grade yet!</li></ul>',
-    results: '<ul><li><b>Feedback</b> – a message from your teacher.</li><li><b>Things to practise</b> – what to work on next.</li><li><b>Extra help</b> – your teacher will help you with this.</li></ul>',
+    results: '<ul><li><b>Feedback</b> – a message from your teacher.</li><li><b>Weaknesses</b> – things to practise next.</li><li><b>Red Flag</b> – something your teacher will help you with.</li></ul>',
     progress: '<ul><li>Each dot is one exam.</li><li>The dashed line is the 80% goal.</li><li>Change the subject with the menu at the top.</li></ul>',
     practice: '<ul><li>Watch the video first.</li><li>Open the worksheet to practise on paper.</li><li>Do the mini-quiz to earn stars ⭐ — your teacher sees when you finish.</li></ul>',
     sessions: '<ul><li>Your teacher may invite you to a small help group.</li><li>Press <b>Yes, I’ll come!</b> to save your seat.</li></ul>',
