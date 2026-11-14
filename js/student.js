@@ -234,9 +234,9 @@
         '<div class="r"><span class="i" aria-hidden="true">📝</span><div><div class="k">Exam</div><div class="v">' + esc(e.title) + ' — ' + esc(e.topics) + '</div></div></div>' +
         '<div class="r"><span class="i" aria-hidden="true">📅</span><div><div class="k">Checked on</div><div class="v">' + U.fmtDate(pb.at) + '</div></div></div></section></div>' +
         '<h3 class="mt-24 mb-16" style="font-size:22px">Quick Overview</h3><div class="ov-grid">' +
-        '<section class="ov ov-pink"><h4>' + I('message', 'icon-sm') + ' Feedback</h4><p style="white-space:pre-wrap">' + esc(pb.feedback) + '</p></section>' +
+        '<section class="ov ov-mint"><h4>' + I('message', 'icon-sm') + ' Feedback</h4><p style="white-space:pre-wrap">' + esc(pb.feedback) + '</p></section>' +
         '<section class="ov ov-yellow"><h4>' + I('target', 'icon-sm') + ' Weaknesses</h4>' + gapsHTML + '</section>' +
-        '<section class="ov ' + (pb.redFlag ? 'ov-lav' : 'ov-mint') + '"><h4>' + I('flag', 'icon-sm') + ' Red Flag</h4>' + flagHTML + '</section></div>' +
+        '<section class="ov ov-pink"><h4>' + I('flag', 'icon-sm') + ' Red Flag</h4>' + flagHTML + '</section></div>' +
         (ses ? '<div class="notice mt-24" style="font-size:15px">' + I('calendar') + '<span><b>' + esc(teacher()) + ' invited you to “' + esc(ses.title) + '”</b> on ' + U.fmtWhen(ses.at) + '. ' + (ses.registrations.includes(me().id) ? 'You are registered ✓' : '<a href="#/sessions">See details & register →</a>') + '</span></div>' : '') +
         answers +
         '<div class="mt-24">' + (prac ? '<a class="btn btn-primary cta-big" href="#/practice?focus=' + prac.id + '">View Recommended Practice ✨</a>' : '<a class="btn btn-primary cta-big" href="#/practice">Go to my practice ✨</a>') + '</div>'
